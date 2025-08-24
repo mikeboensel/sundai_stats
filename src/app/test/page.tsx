@@ -11,15 +11,21 @@ import ProjectStatisticsChart from "@/components/analytics/projectStatistics/Cha
 import { computeProjectStatistics } from "@/components/analytics/projectStatistics/compute";
 import ProjectGrowthChart from "@/components/analytics/projectGrowth/Chart";
 import { computeProjectGrowth } from "@/components/analytics/projectGrowth/compute";
+import ProlificParticipantsChart from "@/components/analytics/prolificParticipants/Chart";
+import { computeProlificParticipants } from "@/components/analytics/prolificParticipants/compute";
+import ProlificLeadsChart from "@/components/analytics/prolificLeads/Chart";
+import { computeProlificLeads } from "@/components/analytics/prolificLeads/compute";
 
-// Server Component: fetch and display a single Project as a proof of concept
+// Server Component
 type ViewKey =
   | "hacker-completeness"
   | "hacker-growth"
   | "project-growth"
   | "project-statuses"
   | "project-completeness"
-  | "project-statistics";
+  | "project-statistics"
+  | "prolific-participants"
+  | "prolific-leads";
 
 const VIEWS: Array<{ key: ViewKey; label: string }> = [
   { key: "hacker-completeness", label: "Hacker Completeness" },
@@ -28,6 +34,8 @@ const VIEWS: Array<{ key: ViewKey; label: string }> = [
   { key: "project-statuses", label: "Project Statuses" },
   { key: "project-completeness", label: "Project Completeness" },
   { key: "project-statistics", label: "Project Statistics" },
+  { key: "prolific-participants", label: "Prolific Participants" },
+  { key: "prolific-leads", label: "Prolific Leads" },
 ];
 
 export default async function TestPage({
@@ -38,7 +46,7 @@ export default async function TestPage({
   try {
     const view = (searchParams?.view as ViewKey) ?? "hacker-growth";
 
-    // Compute ONLY the selected analytic to minimize DB connections
+    // Computing ONLY the selected analytic to minimize DB connections
     let content: React.ReactNode = null;
     switch (view) {
       case "hacker-completeness": {
@@ -71,6 +79,16 @@ export default async function TestPage({
         content = <ProjectStatisticsChart data={data} />;
         break;
       }
+      case "prolific-participants": {
+        const data = await computeProlificParticipants(20);
+        content = <ProlificParticipantsChart data={data} />;
+        break;
+      }
+      case "prolific-leads": {
+        const data = await computeProlificLeads(20);
+        content = <ProlificLeadsChart data={data} />;
+        break;
+      }
       default: {
         const data = await computeHackerGrowth();
         content = <HackerGrowthChart data={data} />;
@@ -100,7 +118,9 @@ export default async function TestPage({
                   fontWeight: 600,
                   color: active ? "#0ea5e9" : "#e5e7eb",
                   background: active ? "#0b1020" : "transparent",
-                  border: active ? "1px solid #0ea5e9" : "1px solid transparent",
+                  border: active
+                    ? "1px solid #0ea5e9"
+                    : "1px solid transparent",
                 }}
               >
                 {v.label}
