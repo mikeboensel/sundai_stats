@@ -12,11 +12,6 @@ import {
 } from "recharts";
 import type { ProlificLeadsResult } from "./types";
 
-function truncate(label: string, n = 14) {
-  if (!label) return "";
-  return label.length > n ? label.slice(0, n - 1) + "…" : label;
-}
-
 export default function ProlificLeadsChart({ data }: { data: ProlificLeadsResult }) {
   // Histogram: X = projects led, Y = # hackers
   const series = data.distribution.map((b) => ({ count: b.count, hackers: b.hackers }));

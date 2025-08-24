@@ -9,10 +9,6 @@ import type { ProjectStatusesSummary } from "./types";
 
 const COLORS = ["#f59e0b", "#6366f1", "#16a34a"]; // draft=amber, pending=indigo, approved=green
 
-function formatPercent(p: number) {
-  return `${p.toFixed(2)}%`;
-}
-
 export default function ProjectStatusesChart({ data }: { data: ProjectStatusesSummary }) {
   const chartData = data.statuses.map((s) => ({ name: s.label, value: s.count, percent: s.percent }));
 
@@ -31,8 +27,15 @@ export default function ProjectStatusesChart({ data }: { data: ProjectStatusesSu
               ))}
             </Pie>
             <Tooltip
-              formatter={(value: number | string, name: string, props: any) => {
-                const p = (props?.payload as any)?.percent as number | undefined;
+              formatter={(value: number | string, name: string, item: unknown) => {
+                let p: number | undefined;
+                if (typeof item === "object" && item !== null && "payload" in (item as Record<string, unknown>)) {
+                  const payload = (item as Record<string, unknown>).payload;
+                  if (typeof payload === "object" && payload !== null && "percent" in (payload as Record<string, unknown>)) {
+                    const maybe = (payload as Record<string, unknown>).percent;
+                    if (typeof maybe === "number") p = maybe;
+                  }
+                }
                 const label = typeof value === "number" ? `${value.toLocaleString()} projects` : String(value);
                 const pct = typeof p === "number" ? ` (${p.toFixed(2)}%)` : "";
                 return [label + pct, name];
@@ -45,3 +48,4 @@ export default function ProjectStatusesChart({ data }: { data: ProjectStatusesSu
     </section>
   );
 }
+

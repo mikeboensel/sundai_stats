@@ -14,11 +14,13 @@
     "@prisma/client": "^5.19.1",
     "next": "15.5.0",
     "react": "19.1.0",
+    "react-d3-cloud": "^1.0.6",
     "react-dom": "19.1.0",
     "recharts": "^2.15.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@octokit/rest": "^22.0.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
@@ -28,6 +30,7 @@
     "prettier": "^3.3.3",
     "prisma": "^5.19.1",
     "tailwindcss": "^4",
+    "tsx": "^4.20.5",
     "typescript": "^5"
   }
 }
