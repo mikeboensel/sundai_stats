@@ -2,12 +2,12 @@
  * Server-side: compute completeness of Approved projects across selected fields.
  */
 import prisma from "@/lib/prisma";
-import { ProjectStatus } from "@prisma/client";
+import { Prisma, $Enums } from "@prisma/client";
 import type { ProjectCompletenessPercents } from "./types";
 
 export async function computeProjectCompleteness(): Promise<ProjectCompletenessPercents> {
   const totalApprovedProjects = await prisma.project.count({
-    where: { status: ProjectStatus.APPROVED },
+    where: { status: $Enums.ProjectStatus.APPROVED },
   });
 
   const [
@@ -19,31 +19,31 @@ export async function computeProjectCompleteness(): Promise<ProjectCompletenessP
   ] = await Promise.all([
     prisma.project.count({
       where: {
-        status: ProjectStatus.APPROVED,
+        status: $Enums.ProjectStatus.APPROVED,
         AND: [{ description: { not: null } }, { description: { not: "" } }],
       },
     }),
     prisma.project.count({
       where: {
-        status: ProjectStatus.APPROVED,
+        status: $Enums.ProjectStatus.APPROVED,
         AND: [{ githubUrl: { not: null } }, { githubUrl: { not: "" } }],
       },
     }),
     prisma.project.count({
       where: {
-        status: ProjectStatus.APPROVED,
+        status: $Enums.ProjectStatus.APPROVED,
         AND: [{ demoUrl: { not: null } }, { demoUrl: { not: "" } }],
       },
     }),
     prisma.project.count({
       where: {
-        status: ProjectStatus.APPROVED,
+        status: $Enums.ProjectStatus.APPROVED,
         AND: [{ blogUrl: { not: null } }, { blogUrl: { not: "" } }],
       },
     }),
     prisma.project.count({
       where: {
-        status: ProjectStatus.APPROVED,
+        status: $Enums.ProjectStatus.APPROVED,
         AND: [{ thumbnailId: { not: null } }, { thumbnailId: { not: "" } }],
       },
     }),
