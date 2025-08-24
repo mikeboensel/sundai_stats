@@ -17,11 +17,14 @@ export async function computeProlificParticipants(limit = 20): Promise<ProlificP
   const topGrouped = grouped.slice(0, Math.max(0, limit));
 
   const hackerIds: string[] = topGrouped.map((g) => g.hackerId);
-  const hackers = await prisma.hacker.findMany({
+  type HackerRow = { id: string; name: string | null; username: string | null };
+  const hackers: HackerRow[] = await prisma.hacker.findMany({
     where: { id: { in: hackerIds } },
     select: { id: true, name: true, username: true },
   });
-  const hackerMap = new Map(hackers.map((h) => [h.id, h]));
+  const hackerMap = new Map<string, HackerRow>(
+    hackers.map((h: HackerRow) => [h.id, h])
+  );
 
   const top: ProlificParticipant[] = topGrouped.map((g) => {
     const h = hackerMap.get(g.hackerId);

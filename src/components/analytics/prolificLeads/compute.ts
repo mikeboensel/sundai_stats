@@ -22,11 +22,14 @@ export async function computeProlificLeads(limit = 20): Promise<ProlificLeadsRes
   const hackerIds = topWithLeadIds
     .map((g) => g.launchLeadId)
     .filter((id): id is string => Boolean(id));
-  const hackers = await prisma.hacker.findMany({
+  type HackerRow = { id: string; name: string | null; username: string | null };
+  const hackers: HackerRow[] = await prisma.hacker.findMany({
     where: { id: { in: hackerIds } },
     select: { id: true, name: true, username: true },
   });
-  const hackerMap = new Map(hackers.map((h) => [h.id, h]));
+  const hackerMap = new Map<string, HackerRow>(
+    hackers.map((h: HackerRow) => [h.id, h])
+  );
 
   const top: ProlificLead[] = topWithLeadIds.map((g) => {
     const h = hackerMap.get(g.launchLeadId);
