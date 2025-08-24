@@ -6,27 +6,29 @@ import type { ProlificLeadsResult, ProlificLead } from "./types";
 
 export async function computeProlificLeads(limit = 20): Promise<ProlificLeadsResult> {
   // Group by Project.launchLeadId
-  const grouped = await prisma.project.groupBy({
+  type LeadGroup = { launchLeadId: string | null; _count?: { _all?: number } };
+  const grouped = (await prisma.project.groupBy({
     by: ["launchLeadId"],
     _count: { _all: true },
-  });
+  })) as unknown as LeadGroup[];
 
-  grouped.sort(
-    (
-      a: { _count?: { _all?: number } },
-      b: { _count?: { _all?: number } }
-    ) => (b._count?._all ?? 0) - (a._count?._all ?? 0)
-  );
+  grouped.sort((a, b) => (b._count?._all ?? 0) - (a._count?._all ?? 0));
   const topGrouped = grouped.slice(0, Math.max(0, limit));
 
-  const hackerIds = topGrouped.map((g) => g.launchLeadId);
+  const topWithLeadIds = topGrouped.filter(
+    (g): g is LeadGroup & { launchLeadId: string } => typeof g.launchLeadId === "string"
+  );
+
+  const hackerIds = topWithLeadIds
+    .map((g) => g.launchLeadId)
+    .filter((id): id is string => Boolean(id));
   const hackers = await prisma.hacker.findMany({
     where: { id: { in: hackerIds } },
     select: { id: true, name: true, username: true },
   });
   const hackerMap = new Map(hackers.map((h) => [h.id, h]));
 
-  const top: ProlificLead[] = topGrouped.map((g) => {
+  const top: ProlificLead[] = topWithLeadIds.map((g) => {
     const h = hackerMap.get(g.launchLeadId);
     return {
       hackerId: g.launchLeadId,

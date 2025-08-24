@@ -6,16 +6,17 @@ import type { ProlificParticipantsResult, ProlificParticipant, ParticipantCountB
 
 export async function computeProlificParticipants(limit = 20): Promise<ProlificParticipantsResult> {
   // Group by participant hackerId
-  const grouped = await prisma.projectToParticipant.groupBy({
+  type ParticipantGroup = { hackerId: string; _count?: { _all?: number } };
+  const grouped = (await prisma.projectToParticipant.groupBy({
     by: ["hackerId"],
     _count: { _all: true },
-  });
+  })) as unknown as ParticipantGroup[];
 
   // Sort by count desc and take top N in application layer to avoid Prisma type friction
   grouped.sort((a, b) => (b._count?._all ?? 0) - (a._count?._all ?? 0));
   const topGrouped = grouped.slice(0, Math.max(0, limit));
 
-  const hackerIds = topGrouped.map((g) => g.hackerId);
+  const hackerIds: string[] = topGrouped.map((g) => g.hackerId);
   const hackers = await prisma.hacker.findMany({
     where: { id: { in: hackerIds } },
     select: { id: true, name: true, username: true },

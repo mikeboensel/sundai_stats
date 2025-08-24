@@ -18,6 +18,8 @@ import { computeProlificLeads } from "@/components/analytics/prolificLeads/compu
 import ProjectTagsChart from "@/components/analytics/projectTags/Chart";
 import { computeProjectTags } from "@/components/analytics/projectTags/compute";
 
+export const dynamic = "force-dynamic";
+
 // Server Component
 type ViewKey =
   | "hacker-completeness"
@@ -45,10 +47,11 @@ const VIEWS: Array<{ key: ViewKey; label: string }> = [
 export default async function TestPage({
   searchParams,
 }: {
-  searchParams: { view?: string };
+  searchParams: Promise<{ view?: string }>;
 }) {
   try {
-    const view = (searchParams?.view as ViewKey) ?? "hacker-growth";
+    const sp = await searchParams;
+    const view = (sp?.view as ViewKey) ?? "hacker-growth";
 
     // Computing ONLY the selected analytic to minimize DB connections
     let content: React.ReactNode = null;
