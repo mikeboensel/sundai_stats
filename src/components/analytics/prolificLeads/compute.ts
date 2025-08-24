@@ -11,7 +11,12 @@ export async function computeProlificLeads(limit = 20): Promise<ProlificLeadsRes
     _count: { _all: true },
   });
 
-  grouped.sort((a, b) => (b._count?._all ?? 0) - (a._count?._all ?? 0));
+  grouped.sort(
+    (
+      a: { _count?: { _all?: number } },
+      b: { _count?: { _all?: number } }
+    ) => (b._count?._all ?? 0) - (a._count?._all ?? 0)
+  );
   const topGrouped = grouped.slice(0, Math.max(0, limit));
 
   const hackerIds = topGrouped.map((g) => g.launchLeadId);
