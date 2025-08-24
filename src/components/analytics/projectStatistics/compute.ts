@@ -2,7 +2,6 @@
  * Server-side: compute project statistics distributions.
  */
 import prisma from "@/lib/prisma";
-import { HackType } from "@prisma/client";
 import type { DistributionSlice, ProjectStatistics } from "./types";
 
 function toDistribution(map: Map<string, number>, total: number): DistributionSlice[] {
@@ -57,8 +56,8 @@ export async function computeProjectStatistics(): Promise<ProjectStatistics> {
 
   // Hack type distribution
   const [regular, research] = await Promise.all([
-    prisma.project.count({ where: { hack_type: HackType.REGULAR } }),
-    prisma.project.count({ where: { hack_type: HackType.RESEARCH } }),
+    prisma.project.count({ where: { hack_type: "REGULAR" } }),
+    prisma.project.count({ where: { hack_type: "RESEARCH" } }),
   ]);
   const hackTypeMap = new Map<string, number>([
     ["Regular", regular],
