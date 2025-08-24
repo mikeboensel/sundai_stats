@@ -22,21 +22,11 @@ const COLORS = [
   "#f97316", // orange
 ];
 
-function PercentTooltip() {
-  return (
-    <Tooltip
-      formatter={(value: number | string, name: string, props: any) => {
-        const p = (props?.payload as any)?.percent as number | undefined;
-        const label = typeof value === "number" ? `${value.toLocaleString()} projects` : String(value);
-        const pct = typeof p === "number" ? ` (${p.toFixed(2)}%)` : "";
-        return [label + pct, name];
-      }}
-    />
-  );
-}
+// Removed PercentTooltip in favor of inline Tooltip with explicit styles and computed percent
 
 function PieBlock({ title, data }: { title: string; data: DistributionSlice[] }) {
-  const chartData = data.map((s) => ({ name: s.name, value: s.count, percent: s.percent }));
+  const chartData = data.map((s) => ({ name: s.name, value: s.count }));
+  const total = chartData.reduce((acc, d) => acc + (typeof d.value === "number" ? d.value : 0), 0);
   return (
     <div style={{ background: "#0b1020", borderRadius: 10, padding: 12 }}>
       <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: "#e6edf3" }}>{title}</h3>
@@ -48,7 +38,16 @@ function PieBlock({ title, data }: { title: string; data: DistributionSlice[] })
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <PercentTooltip />
+            <Tooltip
+              contentStyle={{ background: "#f9fafb", border: "1px solid #e5e7eb", color: "#111827" }}
+              labelStyle={{ color: "#111827", fontWeight: 600 }}
+              formatter={(value: number | string, name: string) => {
+                const v = typeof value === "number" ? value : Number(value);
+                const pct = total > 0 && !Number.isNaN(v) ? ` (${((v / total) * 100).toFixed(2)}%)` : "";
+                const label = Number.isFinite(v) ? `${v.toLocaleString()} projects${pct}` : String(value);
+                return [label, name];
+              }}
+            />
             <Legend />
           </PieChart>
         </ResponsiveContainer>

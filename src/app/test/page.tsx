@@ -15,6 +15,8 @@ import ProlificParticipantsChart from "@/components/analytics/prolificParticipan
 import { computeProlificParticipants } from "@/components/analytics/prolificParticipants/compute";
 import ProlificLeadsChart from "@/components/analytics/prolificLeads/Chart";
 import { computeProlificLeads } from "@/components/analytics/prolificLeads/compute";
+import ProjectTagsChart from "@/components/analytics/projectTags/Chart";
+import { computeProjectTags } from "@/components/analytics/projectTags/compute";
 
 // Server Component
 type ViewKey =
@@ -24,6 +26,7 @@ type ViewKey =
   | "project-statuses"
   | "project-completeness"
   | "project-statistics"
+  | "project-tags"
   | "prolific-participants"
   | "prolific-leads";
 
@@ -34,6 +37,7 @@ const VIEWS: Array<{ key: ViewKey; label: string }> = [
   { key: "project-statuses", label: "Project Statuses" },
   { key: "project-completeness", label: "Project Completeness" },
   { key: "project-statistics", label: "Project Statistics" },
+  { key: "project-tags", label: "Project Tags" },
   { key: "prolific-participants", label: "Prolific Participants" },
   { key: "prolific-leads", label: "Prolific Leads" },
 ];
@@ -77,6 +81,11 @@ export default async function TestPage({
       case "project-statistics": {
         const data = await computeProjectStatistics();
         content = <ProjectStatisticsChart data={data} />;
+        break;
+      }
+      case "project-tags": {
+        const data = await computeProjectTags();
+        content = <ProjectTagsChart data={data} />;
         break;
       }
       case "prolific-participants": {
