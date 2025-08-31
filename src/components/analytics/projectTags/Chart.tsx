@@ -142,20 +142,42 @@ export default function ProjectTagsChart({
   return (
     <section style={{ marginTop: 24 }}>
       <h1 style={{ fontSize: 36, fontWeight: 700, marginBottom: 12 }}>
-        Project Tags (Tech Tags)
+        Tech Tags
       </h1>
 
-      <div>
-        <D3WordCloud data={data.tech} />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 16,
+          alignItems: "stretch",
+        }}
+      >
+        <div>
+          <D3WordCloud data={data.tech} />
+        </div>
+        <div>
+          <WordCloudBoring data={data.tech} />
+        </div>
       </div>
-      <WordCloudBoring data={data.tech} />
       <h1 style={{ fontSize: 36, fontWeight: 700, marginBottom: 12 }}>
-        Project Tags (Domain Tags)
+        Domain Tags
       </h1>
-      <div>
-        <D3WordCloud data={data.domain} />
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 16,
+          alignItems: "stretch",
+        }}
+      >
+        <div>
+          <D3WordCloud data={data.domain} />
+        </div>
+        <div>
+          <WordCloudBoring data={data.domain} />
+        </div>
       </div>
-      <WordCloudBoring data={data.domain} />
     </section>
   );
 }
