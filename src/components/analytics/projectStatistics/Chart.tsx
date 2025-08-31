@@ -8,8 +8,17 @@
  * - Domain tag count distribution (pie)
  */
 import React from "react";
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
+import {
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  Legend,
+} from "recharts";
 import type { DistributionSlice, ProjectStatistics } from "./types";
+import ProjectTagsChart from "../projectTags/Chart";
+import type { ProjectTagsResult } from "../projectTags/types";
 
 const COLORS = [
   "#3b82f6", // blue
@@ -24,27 +33,64 @@ const COLORS = [
 
 // Removed PercentTooltip in favor of inline Tooltip with explicit styles and computed percent
 
-function PieBlock({ title, data }: { title: string; data: DistributionSlice[] }) {
+function PieBlock({
+  title,
+  data,
+}: {
+  title: string;
+  data: DistributionSlice[];
+}) {
   const chartData = data.map((s) => ({ name: s.name, value: s.count }));
-  const total = chartData.reduce((acc, d) => acc + (typeof d.value === "number" ? d.value : 0), 0);
+  const total = chartData.reduce(
+    (acc, d) => acc + (typeof d.value === "number" ? d.value : 0),
+    0
+  );
   return (
     <div style={{ background: "#0b1020", borderRadius: 10, padding: 12 }}>
-      <h3 style={{ fontSize: 16, fontWeight: 600, marginBottom: 8, color: "#e6edf3" }}>{title}</h3>
+      <h3
+        style={{
+          fontSize: 16,
+          fontWeight: 600,
+          marginBottom: 8,
+          color: "#e6edf3",
+        }}
+      >
+        {title}
+      </h3>
       <div style={{ width: "100%", height: 260 }}>
         <ResponsiveContainer>
           <PieChart>
-            <Pie data={chartData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={90} paddingAngle={2}>
+            <Pie
+              data={chartData}
+              dataKey="value"
+              nameKey="name"
+              innerRadius={60}
+              outerRadius={90}
+              paddingAngle={2}
+            >
               {chartData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={COLORS[index % COLORS.length]}
+                />
               ))}
             </Pie>
             <Tooltip
-              contentStyle={{ background: "#f9fafb", border: "1px solid #e5e7eb", color: "#111827" }}
+              contentStyle={{
+                background: "#f9fafb",
+                border: "1px solid #e5e7eb",
+                color: "#111827",
+              }}
               labelStyle={{ color: "#111827", fontWeight: 600 }}
               formatter={(value: number | string, name: string) => {
                 const v = typeof value === "number" ? value : Number(value);
-                const pct = total > 0 && !Number.isNaN(v) ? ` (${((v / total) * 100).toFixed(2)}%)` : "";
-                const label = Number.isFinite(v) ? `${v.toLocaleString()} projects${pct}` : String(value);
+                const pct =
+                  total > 0 && !Number.isNaN(v)
+                    ? ` (${((v / total) * 100).toFixed(2)}%)`
+                    : "";
+                const label = Number.isFinite(v)
+                  ? `${v.toLocaleString()} projects${pct}`
+                  : String(value);
                 return [label, name];
               }}
             />
@@ -56,12 +102,21 @@ function PieBlock({ title, data }: { title: string; data: DistributionSlice[] })
   );
 }
 
-export default function ProjectStatisticsChart({ data }: { data: ProjectStatistics }) {
+export default function ProjectStatisticsChart({
+  project_stats_data,
+  tags_data: tags,
+}: {
+  project_stats_data: ProjectStatistics;
+  tags_data: ProjectTagsResult;
+}) {
+  console.log("project_stats_data:", project_stats_data);
   return (
     <section style={{ marginTop: 24 }}>
-      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>Project Statistics</h2>
+      <h2 style={{ fontSize: 20, fontWeight: 700, marginBottom: 12 }}>
+        Project Statistics
+      </h2>
       <p style={{ color: "#6b7280", marginBottom: 16 }}>
-        Total projects: {data.totalProjects.toLocaleString()}
+        Total projects: {project_stats_data.totalProjects.toLocaleString()}
       </p>
       <div
         style={{
@@ -70,11 +125,15 @@ export default function ProjectStatisticsChart({ data }: { data: ProjectStatisti
           gap: 16,
         }}
       >
-        <PieBlock title="Team size (members per project)" data={data.teamSize} />
-        <PieBlock title="Hack Type" data={data.hackType} />
-        <PieBlock title="# of Tech Tags" data={data.techTagCounts} />
-        <PieBlock title="# of Domain Tags" data={data.domainTagCounts} />
+        <PieBlock
+          title="Team size (members per project)"
+          data={project_stats_data.teamSize}
+        />
+        <PieBlock title="Hack Type" data={project_stats_data.hackType} />
+        {/* <PieBlock title="# of Tech Tags" data={data.techTagCounts} />
+        <PieBlock title="# of Domain Tags" data={data.domainTagCounts} /> */}
       </div>
+      <ProjectTagsChart data={tags} />
     </section>
   );
 }

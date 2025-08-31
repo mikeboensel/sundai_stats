@@ -82,8 +82,14 @@ export default async function TestPage({
         break;
       }
       case "project-statistics": {
-        const data = await computeProjectStatistics();
-        content = <ProjectStatisticsChart data={data} />;
+        const project_stats_data = await computeProjectStatistics();
+        const tags_data = await computeProjectTags();
+        content = (
+          <ProjectStatisticsChart
+            project_stats_data={project_stats_data}
+            tags_data={tags_data}
+          />
+        );
         break;
       }
       case "project-tags": {

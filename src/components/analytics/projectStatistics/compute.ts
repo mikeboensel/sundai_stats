@@ -4,7 +4,10 @@
 import prisma from "@/lib/prisma";
 import type { DistributionSlice, ProjectStatistics } from "./types";
 
-function toDistribution(map: Map<string, number>, total: number): DistributionSlice[] {
+function toDistribution(
+  map: Map<string, number>,
+  total: number
+): DistributionSlice[] {
   const entries = Array.from(map.entries());
   // Sort numerically when possible, otherwise lexicographically
   entries.sort((a, b) => {
@@ -17,7 +20,11 @@ function toDistribution(map: Map<string, number>, total: number): DistributionSl
     if (bIsNum) return 1;
     return a[0].localeCompare(b[0]);
   });
-  return entries.map(([name, count]) => ({ name, count, percent: total > 0 ? (count / total) * 100 : 0 }));
+  return entries.map(([name, count]) => ({
+    name,
+    count,
+    percent: total > 0 ? (count / total) * 100 : 0,
+  }));
 }
 
 export async function computeProjectStatistics(): Promise<ProjectStatistics> {
@@ -37,21 +44,21 @@ export async function computeProjectStatistics(): Promise<ProjectStatistics> {
   });
 
   const teamSizeMap = new Map<string, number>();
-  const techTagCountMap = new Map<string, number>();
-  const domainTagCountMap = new Map<string, number>();
+  // const techTagCountMap = new Map<string, number>();
+  // const domainTagCountMap = new Map<string, number>();
 
   for (const p of projectsCounts) {
     const size = 1 + p._count.participants; // launch lead + participants
     const sizeKey = String(size);
     teamSizeMap.set(sizeKey, (teamSizeMap.get(sizeKey) ?? 0) + 1);
 
-    const techC = p._count.techTags;
-    const techKey = String(techC);
-    techTagCountMap.set(techKey, (techTagCountMap.get(techKey) ?? 0) + 1);
+    // const techC = p._count.techTags;
+    // const techKey = String(techC);
+    // techTagCountMap.set(techKey, (techTagCountMap.get(techKey) ?? 0) + 1);
 
-    const domainC = p._count.domainTags;
-    const domainKey = String(domainC);
-    domainTagCountMap.set(domainKey, (domainTagCountMap.get(domainKey) ?? 0) + 1);
+    // const domainC = p._count.domainTags;
+    // const domainKey = String(domainC);
+    // domainTagCountMap.set(domainKey, (domainTagCountMap.get(domainKey) ?? 0) + 1);
   }
 
   // Hack type distribution
@@ -69,7 +76,7 @@ export async function computeProjectStatistics(): Promise<ProjectStatistics> {
     totalProjects,
     teamSize: toDistribution(teamSizeMap, totalProjects),
     hackType: toDistribution(hackTypeMap, totalHackTyped),
-    techTagCounts: toDistribution(techTagCountMap, totalProjects),
-    domainTagCounts: toDistribution(domainTagCountMap, totalProjects),
+    // techTagCounts: toDistribution(techTagCountMap, totalProjects),
+    // domainTagCounts: toDistribution(domainTagCountMap, totalProjects),
   };
 }

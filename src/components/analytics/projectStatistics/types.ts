@@ -8,6 +8,6 @@ export type ProjectStatistics = {
   totalProjects: number;
   teamSize: DistributionSlice[]; // number of hackers per project (launch lead + participants)
   hackType: DistributionSlice[]; // REGULAR vs RESEARCH
-  techTagCounts: DistributionSlice[]; // number of tech tags on a project
-  domainTagCounts: DistributionSlice[]; // number of domain tags on a project
+  // techTagCounts: DistributionSlice[]; // number of tech tags on a project
+  // domainTagCounts: DistributionSlice[]; // number of domain tags on a project
 };
